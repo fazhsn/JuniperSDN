@@ -1,8 +1,8 @@
 '''
-This Function givens the latency of a link and jitter
+This Function givens the latency of a link and jitter and errors
 The jitter is calculated by using the formula
 Jitter = (Max Latency - Avergare Latency)^2/2
-Authors - Faisal, Daniel, Heli
+Authors -Daniel, Faisal, Heli
 Purpose - NorthStart COntroller Juniper SDN Throwdown
 '''
 
@@ -19,6 +19,9 @@ class RedisStatus:
 		self.intf = intf
 	def AvergaeLatency(self):
 		r = redis.StrictRedis(host='10.10.4.252', port=6379, db=0)
+		#temp = r.keys()
+		#print temp
+		raw_input('Enter To Continue')
 	# r.lrnage(src :dst:latency, from record, to record)[total number of records whose average needs to be taken]
 		latency_avg = r.lrange(self.src+':'+self.dst+':latency', 0, 10)
 		#print latency_avg
@@ -58,6 +61,9 @@ class RedisStatus:
 			print data
 			print "The Network Status Needed Needs to be added "
 			print data['stats'][0]['input-bps'][0]['data']
+			print data
+			print "------"
+			print data['stats']
 		else:
 			print TrafficStats
 			print "Check Interface/ HostName/InterfaceName"
