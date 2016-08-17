@@ -1,13 +1,14 @@
 
 import redis
 import json
-import time
-from LinkAPI import *
+#import time
+from LinkAPI import GetNodes, GetLink
 from collections import defaultdict
-from LinkObj import *
+from LinkObj import Link
 
 def IPtoNodeName(NodeIP):
 	nodes = GetNodes()
+	print "nodes printed"
 	for node in nodes :
 		if NodeIP == node['name']:
 			srcName = node['hostName']
@@ -41,6 +42,7 @@ def CurrentLinkUtil():
 	#link =dict[("link"][('src','dst'))]
 	LinkDict = {}
 	links = GetLink()
+	print "links printed"
 	for link in links:
 		#LinkDict[link['name']] = [link['endA']['node']['name'],link['endA']['node']['name'],link['operationalStatus']]
 		#print link['name']
@@ -53,9 +55,13 @@ def CurrentLinkUtil():
 		srcName = IPtoNodeName(link['endA']['node']['name'])
 		dstName = IPtoNodeName(link['endZ']['node']['name'])
 		linklatency = latencydef(srcName,dstName)
-		linkobject = (link['name'],srcIP,dstIP,srcName,dstName,linklatency)
+		#linkObj = Link(link['name'],srcIP,dstIP,srcName,dstName,linklatency
+		linkobject = Link(link['name'],srcIP,dstIP,srcName,dstName,linklatency)
 		LinkDict[link['name']] = linkobject		
 	return LinkDict
+
+def 
+
 '''
 	#raw_input('Enter to continue')
 	#for lId in LinkDict.keys():
@@ -100,7 +106,8 @@ def CurrentLinkUtil():
 			#print key
 			#print total
 
-
-CurrentLinkUtil()		
 '''
+linkDict = CurrentLinkUtil()	
+for lid in linkDict.keys():	
+	print "\t", linkDict[lid].srcIP
 
