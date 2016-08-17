@@ -56,7 +56,7 @@ lsp =LspDetail(header,FindLSP)
 print lsp
 print '--------'
 print '--------'
-FindLSP = 'GROUP_ONE_SF_NY_LSP1'
+FindLSP = 'GROUP_ONE_NY_SF_LSP1'
 lsp = LspDetail(header,FindLSP)
 l = ['LSP1','LSP2', 'LSP3','LSP4']
 init = 'GROUP_ONE_NY_SF_'
