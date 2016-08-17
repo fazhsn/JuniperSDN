@@ -31,16 +31,16 @@ import sys
 from collections import defaultdict
 import time
 import logging
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
+#try:
+#    import matplotlib.pyplot as plt
+#except:
+#    raise
 logging.basicConfig(filename = 'eppstein.log', level = logging.DEBUG)
 total_edges_counter = 0
 
 
 
-
+"""
 def draw_graph(G):
     pos = nx.circular_layout(G)
     nx.draw_networkx_nodes(G, pos, node_size = 700)
@@ -49,6 +49,7 @@ def draw_graph(G):
     plt.axis('off')
     plt.savefig('rendered_graph.png')
     plt.show()
+"""
 
 class EppsteinShortestPathAlgorithm(object):
     
