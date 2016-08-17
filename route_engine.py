@@ -80,6 +80,7 @@ def get_alt_path(lspList, brknLink):
 
 def main():
 	brknLink = "10.210.24.2"
+#Refer LabelOBj for Deatils of Return type of LSP object
 	lspList = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_NY_SF_LSP1"]
     	pathDict = get_alt_path(lspList, brknLink)
 	print "Minimum Latency Paths"

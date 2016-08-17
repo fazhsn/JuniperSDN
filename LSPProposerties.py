@@ -7,6 +7,7 @@ This is a standard Class which defines a LSP Path
 class LSPPath():
 	def __init__(self,Name,bandwidth,latency,throughput,ero):
 		self.LSPName = Name
+		self.id = Name[-4:]
 		self.RLSPName = 'GROUP_ONE_NY_SF_'+Name[-4:]
 		#self.SRLG = False
 		self.bandwidth =bandwidth
@@ -21,7 +22,7 @@ class LSPPath():
 		#self.downLink=[]
 		P1 = 'LSP1'
 		P2 = 'LSP2'
-		if self.LSPName.find(P1) != -1:
+		if self.LSPName.find(P1) != -1 or self.LSPName.find(P2) != -1:
 			self.SRLG = True
 		else :
 			self.SRLG = False

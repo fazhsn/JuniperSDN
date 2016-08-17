@@ -27,7 +27,7 @@ def GetLink():
 	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
 	json_data = json.loads(response.text)
 	authHeader= {"Authorization":"{token_type} {access_token}".format(**json_data)}
-	print "GetLinks before get"
+	#print "GetLinks before get"
 	r = requests.get('https://10.10.2.29:8443/NorthStar/API/v1/tenant/1/topology/1/links', headers=authHeader, verify=False)
 	LinksDict = json.loads(r.text)
 	#print LinksDict	
@@ -68,7 +68,7 @@ def SearchLink(IP,LSP):
 		eroipUp = eroip[:-1]+'1'
 		eroipdown = eroip[:-1]+'2'
 		if IP == eachEro or IP == eachEro[:-1]+'1':
-			print LSP.SRLG
+			#print LSP.SRLG
 			Found = True
 
 	return Found
@@ -93,7 +93,6 @@ def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
 	json_data = json.loads(response.text)
 	authHeader= {"Authorization":"{token_type} {access_token}".format(**json_data)}
-	
 	while n< 4:	
 		#raw_input('Enter to continue')
 		if n==0 and LSP1.LSPName.find("LSP1") != -1:
@@ -141,20 +140,27 @@ def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 
 
 def PopulateEROappend(new_lsp,new_Rlsp,LSP):
-	LSP.ResetERO()
+	#LSP.ResetERO()
 	LinkIP = '10.210' # slight Hard coded to eliminate extra address from the lists
-	print new_lsp
+	#print new_lsp
 	for ad in new_lsp['plannedProperties']['ero']:
 		if ad['address'].find(LinkIP)!=-1:
 			LSP.CurrentERO(ad['address'])
-	print '----'
-	print new_Rlsp['plannedProperties']['ero']
-	print '----'
-	for ad in new_Rlsp['plannedProperties']['ero']:
+	#print '----'
+	#	print new_Rlsp['plannedProperties']['ero']
+	#print '----'
+	'''for ad in new_Rlsp['plannedProperties']['ero']:
 		if ad['address'].find(LinkIP) != -1:
 			LSP.RCurrentERO(ad['address'])
-			
+	'''		
 
+
+def LinkToERO(lid):
+	ero = lid.split('_')[0][1:]
+	rero = lid.split('_')[1]
+	print ero
+	print rero
+	return ero,rero
 
 def displaypiero(LSP):
 	LSP.displayERO()
@@ -164,13 +170,12 @@ def displaypiero(LSP):
 
 
 #PopulateEro()
-
+'''
 L1,L2,L3,L4 = createLSPClass()
 PopulateEro(L1,L2,L3,L4)
 displaypiero(L1)
 
 
-'''
 def FindLatency():
 
 

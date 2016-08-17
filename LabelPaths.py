@@ -26,7 +26,7 @@ def LabelModify(IPList,LspToModify):
 	ero =[]
 	for Ip in IPList:
 		ero.append({'topoObjectType': 'ipv4', 'address': Ip})
-	print ero
+	#print ero
 
 	new_lsp = {}
 	for key in ('from', 'to', 'name', 'lspIndex', 'pathType'):
@@ -46,6 +46,7 @@ def LabelModify(IPList,LspToModify):
 '''
 # For Testing 
 IPList = ['10.210.16.2','10.210.17.1'] #,'10.210.11.2','10.210.12.2']
+'''
 '''
 head = Auth()
 header = head.Authheader()
@@ -69,4 +70,4 @@ for li in l:
 	print lsp
 	raw_input('Enter to continue')
 
-#LabelModify(IPList,lsp)
+#LabelModify(IPList,lsp)'''

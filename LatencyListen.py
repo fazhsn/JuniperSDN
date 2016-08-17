@@ -115,7 +115,9 @@ def CurrentLinkUtil():
 			#print total
 
 '''
-linkDict = CurrentLinkUtil()	
+'''
+linkDict = CurrentLinkUtil()
+print linkDict	
 for lid in linkDict.keys():	
-	print "\t", linkDict[lid].srcIP
-
+	print "\t", linkDict[lid]#.srcIP
+'''
