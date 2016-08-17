@@ -50,6 +50,7 @@ def draw_graph(G):
     plt.savefig('rendered_graph.png')
     plt.show()
 
+
 class EppsteinShortestPathAlgorithm(object):
     
     def __init__(self, graph, source ='s', destination ='t'):
