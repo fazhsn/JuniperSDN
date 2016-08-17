@@ -1,7 +1,7 @@
 import requests
 requests.packages.urllib3.disable_warnings()
 import json
-from shortestpaths import EppsteinShortestPathAlgorithm
+from shortestpaths import EppsteinShortestPathAlgorithm, draw_graph
 import networkx as nx
 from LatencyListen import CurrentLinkUtil
 from LinkAPI import getNodesDict
@@ -19,16 +19,17 @@ def createTopologyGraph(nodes, links):
 	for nodeName in nodes.keys():
 		print "nodeName = %s"%nodeName
 		print "loopback = %s"%nodes[nodeName]
-		graph.add_node(nodeName, name=nodeName, index=nodes[nodeName])
+		graph.add_node(nodeName, name=nodeName, index=nodeName)
 	edges = []
 	for linkId in links.keys():
 		linkObj = links[linkId]
-		edges.append((linkObj.srcIP, linkObj.dstIP, linkObj.latency))
-		edges.append((linkObj.dstIP, linkObj.srcIP, linkObj.latency))
+		edges.append((linkObj.srcName, linkObj.dstName, linkObj.latency))
+		edges.append((linkObj.dstName, linkObj.srcName, linkObj.latency))
 		# self,lid,src,dst,srcName,dstName,latency
 	graph.add_weighted_edges_from(edges)
 	graph.add_edge('s', "SF", weight=0)
 	graph.add_edge("NY", 't', weight=0)
+	draw_graph(graph)
 	return graph
 
 def get_alt_path(lspList, brknLink):
@@ -41,8 +42,9 @@ def get_alt_path(lspList, brknLink):
 	e=EppsteinShortestPathAlgorithm(graph)
 	e._pre_process()
 	counter=0
-	altPath = []
+	pathDict = defaultdict(lambda:defaultdict(lambda:None))
 	for delay, epPath in e.get_successive_shortest_paths():			# outputs minimum delay first 
+		altPath = []
 		# maximum number of alternative paths to check
 		counter+=1
 		if counter==maxEpPaths:
@@ -51,15 +53,18 @@ def get_alt_path(lspList, brknLink):
 			if pre is not 's' and cur is not 't':
 				linkId = nToL[pre][cur]
 				altPath.append(linkId)
+		pathDict[counter][delay] = altPath
 
-	return altPath
+	return pathDict
 
 
 def main():
 	brknLink = "L_10.210.24.2_10.210.24.1"
 	lspList = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_NY_SF_LSP1"]
-    	altPath = get_alt_path(lspList, brknLink)
-	print altPath
+    	pathDict = get_alt_path(lspList, brknLink)
+	for indx in pathDict.keys():
+		for delay in pathDict[indx].keys():
+			print "\t%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
 
 
 if __name__ == "__main__":
