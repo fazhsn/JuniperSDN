@@ -17,8 +17,8 @@ def createTopologyGraph(nodes, links):
 	graph.add_node('t', name = "destination",index='t')
 	
 	for nodeName in nodes.keys():
-		print "nodeName = %s"%nodeName
-		print "loopback = %s"%nodes[nodeName]
+		#print "nodeName = %s"%nodeName
+		#print "loopback = %s"%nodes[nodeName]
 		graph.add_node(nodeName, name=nodeName, index=nodeName)
 	edges = []
 	for linkId in links.keys():
@@ -29,16 +29,35 @@ def createTopologyGraph(nodes, links):
 	graph.add_weighted_edges_from(edges)
 	graph.add_edge('s', "SF", weight=0)
 	graph.add_edge("NY", 't', weight=0)
-	draw_graph(graph)
+	#draw_graph(graph)
 	return graph
 
 def get_alt_path(lspList, brknLink):
 	nodes = getNodesDict()
 	links = CurrentLinkUtil()
+	brknSrc = None
+	brknDst = None
+	print "brknLink = %s"%brknLink
 	for lid in links.keys():
 		lnkObj = links[lid]
 		nToL[lnkObj.srcName][lnkObj.dstName] = lid
+		nToL[lnkObj.dstName][lnkObj.srcName] = lid
+		print "lid = %s"%lid
+		if lid.find(brknLink) != -1:
+			print "getting src and dst of broknLink"
+			brknSrc = lnkObj.srcName
+			brknDst = lnkObj.dstName
+
 	graph = createTopologyGraph(nodes, links)
+	if brknSrc is not None and brknDst is not None:
+		print "removing broken link  %s <--> %s "%(brknSrc, brknDst)
+		graph.remove_edge(brknSrc, brknDst)
+		graph.remove_edge(brknDst, brknSrc)
+
+	
+	
+
+
 	e=EppsteinShortestPathAlgorithm(graph)
 	e._pre_process()
 	counter=0
@@ -53,18 +72,20 @@ def get_alt_path(lspList, brknLink):
 			if pre is not 's' and cur is not 't':
 				linkId = nToL[pre][cur]
 				altPath.append(linkId)
+				
 		pathDict[counter][delay] = altPath
 
 	return pathDict
 
 
 def main():
-	brknLink = "L_10.210.24.2_10.210.24.1"
+	brknLink = "10.210.24.2"
 	lspList = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_NY_SF_LSP1"]
     	pathDict = get_alt_path(lspList, brknLink)
+	print "Minimum Latency Paths"
 	for indx in pathDict.keys():
 		for delay in pathDict[indx].keys():
-			print "\t%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
+			print "%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
 
 
 if __name__ == "__main__":
