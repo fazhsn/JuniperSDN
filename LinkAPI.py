@@ -23,7 +23,6 @@ def Topology():
 
 def GetLink():
 	url = "https://10.10.2.29:8443/oauth2/token"
-
 	payload = {'grant_type': 'password', 'username': 'group1', 'password': 'Group1'}
 	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
 	json_data = json.loads(response.text)
@@ -36,7 +35,6 @@ def GetLink():
 	
 def GetNodes():
 	url = "https://10.10.2.29:8443/oauth2/token"
-
 	payload = {'grant_type': 'password', 'username': 'group1', 'password': 'Group1'}
 	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
 	json_data = json.loads(response.text)
@@ -56,36 +54,19 @@ def getNodesDict():
 # The objective of this Function is to Search The Failed link in the LSP Paths and Trigger a notification to PathRecoveryModule
 
 def SearchLink(IP,LSP):
-	'''url = "https://10.10.2.29:8443/oauth2/token"
-	payload = {'grant_type': 'password', 'username': 'group1', 'password': 'Group1'}
-	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
-	json_data = json.loads(response.text)
-	authHeader= {"Authorization":"{token_type} {access_token}".format(**json_data)}
-	'''
-	#ActiveLinks = GetLink()
-	#print ActiveLinks
-	#print LSP.SRLG
-	#print LSP.ero
 	Found = False
 	for eachEro in LSP.ero:
-			if IP == eachEro or IP == eachEro[:-1]+'1':
-				print LSP.SRLG
-				Found = True
-			'''	
-			if links ["name"].find(eachEro) != -1 :
-				LSP.CompleteLink(links["name"])	
-				#print LSP.upLink
-				#print LSP.downLink
-			#print links["name"]
-			#raw_input('Enter to Continue')'''
-	#print LSP.upLink
+		eroip = eachEro
+		eroipUp = eroip[:-1]+'1'
+		eroipdown = eroip[:-1]+'2'
+		if IP == eachEro or IP == eachEro[:-1]+'1':
+			print LSP.SRLG
+			Found = True
+
 	return Found
-	raw_input('Enter to Continue')
 
 # Need this Function To Be Generalized
 def createLSPClass():
-	#Labels = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_SF_NY_LSP2","GROUP_ONE_SF_NY_LSP3","GROUP_ONE_SF_NY_LSP4","GROUP_ONE_NY_SF_LSP1","GROUP_ONE_NY_SF_LSP2","GROUP_ONE_NY_SF_LSP3","GROUP_ONE_NY_SF_LSP4"]
-#for lsp in Labels:
 	bw = '1000'
 	latency = '2'
 	throughput = '1'
@@ -94,13 +75,9 @@ def createLSPClass():
 	LSP2=LSPPath("GROUP_ONE_SF_NY_LSP2",bw,latency,throughput,ero)
 	LSP3=LSPPath("GROUP_ONE_SF_NY_LSP3",bw,latency,throughput,ero)
 	LSP4=LSPPath("GROUP_ONE_SF_NY_LSP4",bw,latency,throughput,ero)
-	#LSP5=LSPPath(LSPN1,bw,latency,throughput,ero)
-		#LSP6=LSPPath(LSPN1,bw,latency,throughput,ero)
-		#LSP7=LSPPath(LSPN1,bw,latency,throughput,ero)
-		#LSP8=LSPPath(LSPN1,bw,latency,throughput,ero)
-	return LSP1,LSP2,LSP3,LSP4 #,LSP5,LSP6,LSP7,LSP8
+	return LSP1,LSP2,LSP3,LSP4
 
-
+#for testing run this 
 def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 	n=0
 	url = "https://10.10.2.29:8443/oauth2/token"
@@ -108,36 +85,42 @@ def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 	response = requests.post (url, data=payload, auth=('group1','Group1'), verify=False)
 	json_data = json.loads(response.text)
 	authHeader= {"Authorization":"{token_type} {access_token}".format(**json_data)}
-	#LSP1,LSP2,LSP3,LSP4 = createLSPClass() #,LSP5,LSP6,LSP7,LSP8 = createLSPClass(lsp)
-	#print LSP1
 	
 	while n< 4:	
 		#raw_input('Enter to continue')
 		if n==0 and LSP1.LSPName.find("LSP1") != -1:
 			lsp = LSP1.LSPName
+			Rlsp = 'GROUP_ONE_NY_SF_LSP1'
 			new_lsp = LspDetail(authHeader,lsp)
-			PopulateEROappend(new_lsp,LSP1)
+			new_Rlsp = LspDetail(authHeader,Rlsp)
+			PopulateEROappend(new_lsp,new_Rlsp,LSP1)
 			#SearchLink(LSP1)
 			#displaypiero(LSP1)
 			n= n+1
 		elif n==1 and LSP2.LSPName.find("LSP2") != -1:
 			lsp = LSP2.LSPName
+			Rlsp = 'GROUP_ONE_NY_SF_LSP2'
 			new_lsp = LspDetail(authHeader,lsp)
-			PopulateEROappend(new_lsp,LSP2)
+			new_Rlsp = LspDetail(authHeader,Rlsp)
+			PopulateEROappend(new_lsp,new_Rlsp,LSP2)
 			#SearchLink(LSP2)
 			#displaypiero(LSP2)
 			n=n+1
 		elif n==2 and LSP3.LSPName.find("LSP3") != -1:
 			lsp = LSP3.LSPName
+			Rlsp = 'GROUP_ONE_NY_SF_LSP3'
 			new_lsp = LspDetail(authHeader,lsp)
-			PopulateEROappend(new_lsp,LSP3)
+			new_Rlsp = LspDetail(authHeader,Rlsp)
+			PopulateEROappend(new_lsp,new_Rlsp,LSP3)
 			#SearchLink(LSP3)			
 			#displaypiero(LSP3)
 			n=n+1
 		elif n==3 and LSP4.LSPName.find("LSP4") != -1:
 			lsp = LSP4.LSPName
+			Rlsp = 'GROUP_ONE_NY_SF_LSP4'
 			new_lsp = LspDetail(authHeader,lsp)
-			PopulateEROappend(new_lsp,LSP4)
+			new_Rlsp = LspDetail(authHeader,Rlsp)
+			PopulateEROappend(new_lsp,new_Rlsp,LSP4)
 			#SearchLink(LSP4)			
 			#displaypiero(LSP4)
 			n=n+1
@@ -149,13 +132,17 @@ def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 
 
 
-def PopulateEROappend(new_lsp,LSP):
+def PopulateEROappend(new_lsp,new_Rlsp,LSP):
+	LSP.ResetERO()
 	LinkIP = '10.210' # slight Hard coded to eliminate extra address from the lists
 	for ad in new_lsp['plannedProperties']['ero']:
 		if ad['address'].find(LinkIP)!=-1:
 			#print ad['address']
 			LSP.CurrentERO(ad['address'])
-
+	for ad in new_Rlsp['plannedProperties']['ero']:
+		if ad['address'].find(LinkIP) != -1:
+			LSP.RCurrentERO(ad['address'])
+			
 
 
 def displaypiero(LSP):
@@ -166,10 +153,11 @@ def displaypiero(LSP):
 
 
 #PopulateEro()
-
-#createLSPClass()
-#displaypiero()
-
+'''
+L1,L2,L3,L4 = createLSPClass()
+PopulateEro(L1,L2,L3,L4)
+displaypiero(L1)
+'''
 
 '''
 def FindLatency():

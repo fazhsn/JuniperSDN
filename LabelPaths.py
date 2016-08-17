@@ -12,18 +12,14 @@ def LspDetail (authHeader, FindLSP):
 	r = requests.get('https://10.10.2.29:8443/NorthStar/API/v1/tenant/1/topology/1/te-lsps/', headers=authHeader, verify=False)
 	p = json.dumps(r.json())
 	lsp_list = json.loads(p)
-	#print FindLSP
-	# Find target LSP to use lspIndex
 	for lsp in lsp_list:
-	    #print lsp['name']
 	    if lsp['name'] == FindLSP:
 		break
 	    else :
 		lsp ={}
-	#print lsp
-	#print lsp['liveProperties']
 	return lsp
 
+# LSPToModify is a LSP Dictionary got from the above def.. To call the below fucntion the above fucntion needs to be called.
 
 def LabelModify(IPList,LspToModify):
 # Fill only the required fields
@@ -47,7 +43,7 @@ def LabelModify(IPList,LspToModify):
 	print response.text
 
 
-
+'''
 # For Testing 
 IPList = ['10.210.16.2','10.210.17.1'] #,'10.210.11.2','10.210.12.2']
 head = Auth()
@@ -58,4 +54,4 @@ FindLSP = 'GROUP_ONE_SF_NY_LSP1'
 lsp =LspDetail(header,FindLSP)
 print lsp
 LabelModify(IPList,lsp)
-
+'''
