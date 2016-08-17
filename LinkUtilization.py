@@ -12,13 +12,14 @@ def CurrentLinkUtil():
 	Keys = r.keys()
 	total =0
 	for key in Keys :
-		if key.find(':traffic statistics') != -1 :
+		if key.find('latency') != -1 :
 			TrafficStats = r.lrange(key, 0, -1)[0]
 			traffic = json.loads(TrafficStats) # decode json; convert json string to python dictionary
-			total = int(traffic['stats'][0]['input-bps'][0]['data'])
+			#total = int(traffic['stats'][0]['input-bps'][0]['data'])
+			print TrafficStats
 			print "The Network Status Needed Needs to be added "
 			print key
-			print total
+			#print total
 
 
 CurrentLinkUtil()		

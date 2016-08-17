@@ -45,9 +45,7 @@ def LinkEvent():
 					print 'in F1'
 					if F1 == True :
 						AffectedLSPlist.append(LSP1)
-
-					#F1 = True
-									
+						
 				elif n == 1:
 					F2 = SearchLink(d['interface_address'],LSP2)
 					n=n+1

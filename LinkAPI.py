@@ -143,10 +143,13 @@ def PopulateEro(LSP1,LSP2,LSP3,LSP4):
 def PopulateEROappend(new_lsp,new_Rlsp,LSP):
 	LSP.ResetERO()
 	LinkIP = '10.210' # slight Hard coded to eliminate extra address from the lists
+	print new_lsp
 	for ad in new_lsp['plannedProperties']['ero']:
 		if ad['address'].find(LinkIP)!=-1:
-			#print ad['address']
 			LSP.CurrentERO(ad['address'])
+	print '----'
+	print new_Rlsp['plannedProperties']['ero']
+	print '----'
 	for ad in new_Rlsp['plannedProperties']['ero']:
 		if ad['address'].find(LinkIP) != -1:
 			LSP.RCurrentERO(ad['address'])
@@ -161,11 +164,11 @@ def displaypiero(LSP):
 
 
 #PopulateEro()
-'''
+
 L1,L2,L3,L4 = createLSPClass()
 PopulateEro(L1,L2,L3,L4)
 displaypiero(L1)
-'''
+
 
 '''
 def FindLatency():

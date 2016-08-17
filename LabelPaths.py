@@ -46,6 +46,7 @@ def LabelModify(IPList,LspToModify):
 '''
 # For Testing 
 IPList = ['10.210.16.2','10.210.17.1'] #,'10.210.11.2','10.210.12.2']
+'''
 head = Auth()
 header = head.Authheader()
 
@@ -53,5 +54,19 @@ header = head.Authheader()
 FindLSP = 'GROUP_ONE_SF_NY_LSP1'
 lsp =LspDetail(header,FindLSP)
 print lsp
-LabelModify(IPList,lsp)
-'''
+print '--------'
+print '--------'
+FindLSP = 'GROUP_ONE_SF_NY_LSP1'
+lsp = LspDetail(header,FindLSP)
+l = ['LSP1','LSP2', 'LSP3','LSP4']
+init = 'GROUP_ONE_NY_SF_'
+print '-----------'
+print '------------'
+raw_input('Enter to continue')
+for li in l:
+	FindLSP = init+li
+	lsp =LspDetail(header,FindLSP)
+	print lsp
+	raw_input('Enter to continue')
+
+#LabelModify(IPList,lsp)
