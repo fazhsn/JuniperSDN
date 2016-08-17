@@ -40,7 +40,8 @@ def GetNodes():
 	json_data = json.loads(response.text)
 	authHeader= {"Authorization":"{token_type} {access_token}".format(**json_data)}
 	r = requests.get('https://10.10.2.29:8443/NorthStar/API/v1/tenant/1/topology/1/nodes', headers=authHeader, verify=False)
-	NodesDict = json.loads(r.text)
+	#NodesDict = json.loads(r.text)
+	NodesCmplxDict=	json.loads(r.text)
 	#print NodesDict	
 	return NodesCmplxDict
 
@@ -50,7 +51,14 @@ def getNodesDict():
 	for node in NodesCmplxDict:
 		nodes[node['hostName']] = node['name']
 	return nodes
-
+'''
+def getReverNodesDic():
+	NodesCmplxDict = GetNodes()
+	nodes = {}
+	for node in NodesCmplxDict:
+		nodes[node['name']] = node['hostName']
+	return nodes
+'''
 # The objective of this Function is to Search The Failed link in the LSP Paths and Trigger a notification to PathRecoveryModule
 
 def SearchLink(IP,LSP):

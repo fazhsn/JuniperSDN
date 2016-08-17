@@ -2,16 +2,22 @@
 import redis
 import json
 #import time
-from LinkAPI import GetNodes, GetLink
+from LinkAPI import GetNodes, GetLink,getNodesDict
 from collections import defaultdict
 from LinkObj import Link
+#nodes= {}
 
-def IPtoNodeName(NodeIP):
-	nodes = GetNodes()
+
+def IPtoNodeName(NodeIP,nodesdict):
+	'''nodes = GetNodes()
 	print "nodes printed"
 	for node in nodes :
 		if NodeIP == node['name']:
 			srcName = node['hostName']
+	return srcName'''
+	for key in nodesdict.keys():
+		if nodesdict[key] == NodeIP :
+			srcName = key
 	return srcName
 #Call the below function after you call the above function
 def latencydef(src,dst):
@@ -38,11 +44,14 @@ def latencydef(src,dst):
 	TrafficStats = r.lrange(srclower+':'+dstlower+':latency', 0, -1)[0]
 	traffic = json.loads(TrafficStats)
 	latency = traffic['rtt-average(ms)']
+	return latency
+
 def CurrentLinkUtil():
 	#link =dict[("link"][('src','dst'))]
 	LinkDict = {}
 	links = GetLink()
 	print "links printed"
+	nodesdict = getNodesDict()
 	for link in links:
 		#LinkDict[link['name']] = [link['endA']['node']['name'],link['endA']['node']['name'],link['operationalStatus']]
 		#print link['name']
@@ -52,15 +61,14 @@ def CurrentLinkUtil():
 		#print LinkDict
 		srcIP = link['endA']['node']['name']
 		dstIP = link['endZ']['node']['name']
-		srcName = IPtoNodeName(link['endA']['node']['name'])
-		dstName = IPtoNodeName(link['endZ']['node']['name'])
+		srcName = IPtoNodeName(link['endA']['node']['name'],nodesdict)
+		dstName = IPtoNodeName(link['endZ']['node']['name'],nodesdict)
 		linklatency = latencydef(srcName,dstName)
 		#linkObj = Link(link['name'],srcIP,dstIP,srcName,dstName,linklatency
 		linkobject = Link(link['name'],srcIP,dstIP,srcName,dstName,linklatency)
 		LinkDict[link['name']] = linkobject		
 	return LinkDict
-
-def 
+ 
 
 '''
 	#raw_input('Enter to continue')
