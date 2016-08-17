@@ -46,10 +46,14 @@ def GetNodes():
 	return NodesCmplxDict
 
 def getNodesDict():
-	NodesCmplxDict = GetNodes()
 	nodes = {}
-	for node in NodesCmplxDict:
-		nodes[node['hostName']] = node['name']
+	staticNodes = False
+	if staticNodes:
+		nodes = {1:"SF", 2:"Dallas", 3:"Miami", 4:"LA", 5:"Houston", 6:"Tampa", 7:"NY", 8:"Chicago"}
+	else:
+		NodesCmplxDict = GetNodes()
+		for node in NodesCmplxDict:
+			nodes[node['hostName']] = node['name']
 	return nodes
 '''
 def getReverNodesDic():
