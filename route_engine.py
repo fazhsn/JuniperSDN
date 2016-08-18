@@ -6,9 +6,9 @@ import networkx as nx
 from LatencyListen import CurrentLinkUtil
 from LinkAPI import getNodesDict
 from LinkObj import Link
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
-maxEpPaths = 6
+maxEpPaths = 30
 nToL = defaultdict(lambda:defaultdict(lambda:None))
 
 def createTopologyGraph(nodes, links):
@@ -23,11 +23,11 @@ def createTopologyGraph(nodes, links):
 	edges = []
 	for linkId in links.keys():
 		linkObj = links[linkId]
+		#print "\tAdding Link %s --> %s with latency\t= %.4f"%(linkObj.srcName,linkObj.dstName, linkObj.latency)
 		edges.append((linkObj.srcName, linkObj.dstName, linkObj.latency))
-		edges.append((linkObj.dstName, linkObj.srcName, linkObj.latency))
-		#print "\tAdding Link %s --> %s"%(linkObj.srcName,linkObj.dstName)
 		#edges.append((linkObj.srcName, linkObj.dstName, 10))
-		#print "\tAdding Link %s --> %s"%(linkObj.dstName, linkObj.srcName)
+		#print "\tAdding Link %s --> %s with latency\t= %.4f"%(linkObj.dstName, linkObj.srcName, linkObj.latency)
+		edges.append((linkObj.dstName, linkObj.srcName, linkObj.latency))
 		#edges.append((linkObj.dstName, linkObj.srcName, 10))
 		# self,lid,src,dst,srcName,dstName,latency
 	graph.add_weighted_edges_from(edges)
@@ -36,19 +36,19 @@ def createTopologyGraph(nodes, links):
 	#draw_graph(graph)
 	return graph
 
-def get_alt_path(lspList, brknLink):
+def get_alt_path(brknLink):
 	nodes = getNodesDict()
 	links = CurrentLinkUtil()
 	brknSrc = None
 	brknDst = None
-	print "brknLink = %s"%brknLink
+	#print "brknLink = %s"%brknLink
 	for lid in links.keys():
 		lnkObj = links[lid]
 		nToL[lnkObj.srcName][lnkObj.dstName] = lid
 		nToL[lnkObj.dstName][lnkObj.srcName] = lid
-		print "lid = %s"%lid
+		#print "lid = %s"%lid
 		if lid.find(brknLink) != -1:
-			print "getting src and dst of broknLink"
+			#print "getting src and dst of broknLink"
 			brknSrc = lnkObj.srcName
 			brknDst = lnkObj.dstName
 
@@ -58,46 +58,59 @@ def get_alt_path(lspList, brknLink):
 		graph.remove_edge(brknSrc, brknDst)
 		graph.remove_edge(brknDst, brknSrc)
 
-	
-	
-
-
 	e=EppsteinShortestPathAlgorithm(graph=graph, source='SF', destination='NY')
 	e._pre_process()
 	counter=0
 	#pathDict = defaultdict(lambda:defaultdict(lambda:None))
 	pathDict = {}
+	keySet = set()
+	pathNum = 1
 	for delay, epPath in e.get_successive_shortest_paths():			# outputs minimum delay first 
-		pathLinks = []
+		#pathLinks = []
 		# maximum number of alternative paths to check
 		counter+=1
 		if counter>maxEpPaths:
 			break
-		for pre, cur in epPath:						# Finding path-bandwidth for each EpPath
-			if pre is not 's' and cur is not 't':
-				linkId = nToL[pre][cur]
-				pathLinks.append(linkId)
+		strKey = ""
+		for pre, cur in epPath:					
+			strKey +=cur
+			#linkId = nToL[pre][cur]
+			#pathLinks.append(linkId)
 			
 		#pathDict[counter][delay] = pathLinks
-		pathDict[counter] = epPath
+		if strKey not in keySet:
+			pathDict[pathNum] = epPath
+			#pathDict[pathNum][delay] = epPath
+			keySet.add(strKey)
+			pathNum +=1
 
 	return pathDict
+
+
+def get_paths_for_lsps(lspList, brknLink):
+    	pathDict = get_alt_path(brknLink)
+	print "Minimum Latency Paths"
+	#print"\tPath#\tDelay\tPath(From --> To)"
+	for pthNum in pathDict.keys():
+		for pre, cur in pathDict[pthNum]:
+			print "\t%s-->%s"%(pre, cur),
+		print
+		#for delay in pathDict[pthNum].keys():
+		#	print "\t%d\t%.4f"%(pthNum, delay),
+		#	for pre, cur in pathDict[pthNum][delay]:
+		#		print "\t%s-->%s"%(pre, cur),
+		#	print
+
+	#for lspObj in lspList:
+		
+
 
 
 def main():
 	brknLink = "10.210.24.2"
 #Refer LabelOBj for Deatils of Return type of LSP object
 	lspList = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_NY_SF_LSP1"]
-    	pathDict = get_alt_path(lspList, brknLink)
-	print "Minimum Latency Paths"
-	for indx in pathDict.keys():
-		#for delay in pathDict[indx].keys():
-		#	print "%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
-		print "\t%d"%indx,
-		for pre, cur in pathDict[indx]:
-			print "\t%s-->%s"%(pre, cur),
-		print
-
+    	lspToPath = get_paths_for_lsps(lspList, brknLink)
 
 if __name__ == "__main__":
 	main()
