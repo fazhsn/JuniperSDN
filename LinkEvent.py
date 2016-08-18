@@ -8,7 +8,7 @@ from LinkAPI import Topology , GetLink , GetNodes , SearchLink , createLSPClass 
 from backup import reroute
 from route_engine import get_alt_path
 from LabelPaths import LabelModify,LspDetail
-from LatencyListen import CurrentLinkUtil
+from LatencyListen import CurrentLinkUtil, BidirectionalDict
 #Labels List
 def LinkEvent():
 	head = Auth()
@@ -30,7 +30,7 @@ def LinkEvent():
 	F2 =False
 	F3= False
 	F4 = False
-	it = {"status": "failed", "router_id": "10.210.10.112", "timestamp": "Mon:00:37:44", "interface_address": "10.210.18.1", "interface_name": "ge-1/0/4", "router_name": "miami"}
+	it = {"status": "failed", "router_id": "10.210.10.112", "timestamp": "Mon:00:37:44", "interface_address": "10.210.18.2", "interface_name": "ge-1/0/4", "router_name": "miami"}
 	while True:
 		#for item in pubsub.listen():
 	    #LSP1,LSP2,LSP3,LSP4 = createLSPClass()
@@ -96,32 +96,46 @@ def LinkEvent():
 					break
 		if F1 == True or F2 == True or F3 == True or F4 == True :
 			from LinkAPI import LinkToERO
+			LinksMap = BidirectionalDict()
 		 	lspList = ["GROUP_ONE_SF_NY_LSP1", "GROUP_ONE_NY_SF_LSP1"]
 			pathDict = get_alt_path(lspList, d['interface_address'])
 			#print pathDict
 			for lsp in AffectedLSPlist:
 				lsp.ResetERO()
+
 			#lenth = len(AffectedLSPlist)
 				print "Minimum Latency Paths"
 				for key in pathDict.keys():
-					if key == 1:
-						print key
-					#for delay in pathDict[indx].keys():
-						for delay in pathDict[key].keys():
-							for lid in pathDict[key][delay]:
-								print lid
-								#if lsp.LSPName.find()						
-								rero,ero = LinkToERO(lid)
-								lsp.CurrentERO(ero)
-								lsp.RCurrentERO(rero)
+					directionLink = pathDict[key] 
+					print directionLink
+					for l in directionLink:
+						srchop = l[0]
+						dsthop = l[1]
+						print srchop
+						print dsthop
+						raw_input('Enter to continue')
+						if key == 1:
+							ero = LinksMap[srchop][dsthop][1]
+							rero= LinksMap[dsthop][srchop][1]	
+							print LinksMap[srchop][dsthop]
+							print ero	
+							lsp.CurrentERO(ero)
+							lsp.RCurrentERO(rero)
 				raw_input('Continue ...')
 				print lsp.ero
 				print lsp.Rero
 				print lsp.LSPName
-				fLSP = LspDetail(header,lsp.LSPName)				
-				LabelModify(lsp.ero,fLSP)
+				fLSP = LspDetail(header,lsp.LSPName)
+				#print fLSP
+				raw_input('EnterToContinue')				
+
 				rLSP = LspDetail(header,lsp.RLSPName)
-				LabelModify(lsp.Rero,rLSP)
+				ActRERO = lsp.Rero[::-1]
+				print ActRERO
+				print lsp.Rero
+				raw_input('Enter to continue')
+				LabelModify(ActRERO,rLSP)
+				LabelModify(lsp.ero,fLSP)
 							
 				raw_input('Enter to continue')
 
