@@ -110,7 +110,7 @@ def LinkEvent():
 						for delay in pathDict[key].keys():
 							for lid in pathDict[key][delay]:
 								print lid
-								if lsp.LSPName.find('')						
+								#if lsp.LSPName.find()						
 								rero,ero = LinkToERO(lid)
 								lsp.CurrentERO(ero)
 								lsp.RCurrentERO(rero)

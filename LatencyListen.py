@@ -2,10 +2,11 @@
 import redis
 import json
 #import time
-from LinkAPI import GetNodes, GetLink,getNodesDict
+from LinkAPI import GetNodes, GetLink,getNodesDict,LinkToERO
 from collections import defaultdict
 from LinkObj import Link
 #nodes= {}
+from collections import defaultdict
 
 
 def IPtoNodeName(NodeIP,nodesdict):
@@ -47,10 +48,11 @@ def latencydef(src,dst):
 	return latency
 
 def CurrentLinkUtil():
+
 	#link =dict[("link"][('src','dst'))]
 	LinkDict = {}
 	links = GetLink()
-	print "links printed"
+	#print "links printed"
 	nodesdict = getNodesDict()
 	for link in links:
 		#LinkDict[link['name']] = [link['endA']['node']['name'],link['endA']['node']['name'],link['operationalStatus']]
@@ -69,6 +71,20 @@ def CurrentLinkUtil():
 		LinkDict[link['name']] = linkobject		
 	return LinkDict
  
+
+
+
+def BidirectionalDict():
+	LinksMap = defaultdict(lambda:defaultdict(lambda:None))
+	LinkDic = CurrentLinkUtil()
+	for key in LinkDic.keys():
+		src = LinkDic[key].srcName
+		dst = LinkDic[key].dstName
+		first,scnd = LinkToERO(LinkDic[key].lid)
+		LinksMap[src][dst] = [first,scnd]
+		LinksMap[dst][src] = [scnd,first]
+	return LinksMap
+		
 
 '''
 	#raw_input('Enter to continue')
@@ -116,8 +132,13 @@ def CurrentLinkUtil():
 
 '''
 '''
-linkDict = CurrentLinkUtil()
-print linkDict	
-for lid in linkDict.keys():	
-	print "\t", linkDict[lid]#.srcIP
-'''
+linkDict = BidirectionalDict()
+
+for src in linkDict.keys():
+	#print src	
+	for dst in linkDict[src].keys():
+		print src+' to '+dst+' path IP interface is'
+		print linkDict[src][dst]
+		#print linkDict[src][dst]
+
+	print "\t", linkDict[lid]#.srcIP'''
