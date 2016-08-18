@@ -8,13 +8,13 @@ from LinkAPI import getNodesDict
 from LinkObj import Link
 from collections import defaultdict
 
-maxEpPaths = 7
+maxEpPaths = 6
 nToL = defaultdict(lambda:defaultdict(lambda:None))
 
 def createTopologyGraph(nodes, links):
 	graph = nx.DiGraph() # Directed Graph
-	graph.add_node('s', name = "source", index= 's')
-	graph.add_node('t', name = "destination",index='t')
+	#graph.add_node('s', name = "source", index= 's')
+	#graph.add_node('t', name = "destination",index='t')
 	
 	for nodeName in nodes.keys():
 		#print "nodeName = %s"%nodeName
@@ -25,10 +25,14 @@ def createTopologyGraph(nodes, links):
 		linkObj = links[linkId]
 		edges.append((linkObj.srcName, linkObj.dstName, linkObj.latency))
 		edges.append((linkObj.dstName, linkObj.srcName, linkObj.latency))
+		#print "\tAdding Link %s --> %s"%(linkObj.srcName,linkObj.dstName)
+		#edges.append((linkObj.srcName, linkObj.dstName, 10))
+		#print "\tAdding Link %s --> %s"%(linkObj.dstName, linkObj.srcName)
+		#edges.append((linkObj.dstName, linkObj.srcName, 10))
 		# self,lid,src,dst,srcName,dstName,latency
 	graph.add_weighted_edges_from(edges)
-	graph.add_edge('s', "SF", weight=0)
-	graph.add_edge("NY", 't', weight=0)
+	#graph.add_edge('s', "SF", weight=0)
+	#graph.add_edge("NY", 't', weight=0)
 	#draw_graph(graph)
 	return graph
 
@@ -58,22 +62,24 @@ def get_alt_path(lspList, brknLink):
 	
 
 
-	e=EppsteinShortestPathAlgorithm(graph)
+	e=EppsteinShortestPathAlgorithm(graph=graph, source='SF', destination='NY')
 	e._pre_process()
 	counter=0
-	pathDict = defaultdict(lambda:defaultdict(lambda:None))
+	#pathDict = defaultdict(lambda:defaultdict(lambda:None))
+	pathDict = {}
 	for delay, epPath in e.get_successive_shortest_paths():			# outputs minimum delay first 
-		altPath = []
+		pathLinks = []
 		# maximum number of alternative paths to check
 		counter+=1
-		if counter==maxEpPaths:
+		if counter>maxEpPaths:
 			break
 		for pre, cur in epPath:						# Finding path-bandwidth for each EpPath
 			if pre is not 's' and cur is not 't':
 				linkId = nToL[pre][cur]
-				altPath.append(linkId)
-				
-		pathDict[counter][delay] = altPath
+				pathLinks.append(linkId)
+			
+		#pathDict[counter][delay] = pathLinks
+		pathDict[counter] = epPath
 
 	return pathDict
 
@@ -85,8 +91,12 @@ def main():
     	pathDict = get_alt_path(lspList, brknLink)
 	print "Minimum Latency Paths"
 	for indx in pathDict.keys():
-		for delay in pathDict[indx].keys():
-			print "%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
+		#for delay in pathDict[indx].keys():
+		#	print "%d\t%.4f\t%s"%(indx, delay, pathDict[indx][delay])
+		print "\t%d"%indx,
+		for pre, cur in pathDict[indx]:
+			print "\t%s-->%s"%(pre, cur),
+		print
 
 
 if __name__ == "__main__":

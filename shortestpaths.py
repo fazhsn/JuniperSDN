@@ -52,8 +52,8 @@ def draw_graph(G):
 
 
 class EppsteinShortestPathAlgorithm(object):
-    
-    def __init__(self, graph, source ='s', destination ='t'):
+    #def __init__(self, graph, source ='s', destination ='t'):
+    def __init__(self, graph, source, destination):	#change
         self._G = graph
         self.path_tree = []
         self.source = source
@@ -80,7 +80,8 @@ class EppsteinShortestPathAlgorithm(object):
         #make a reversed graph (reversing all the edges), so we can find single destination shortest paths problem
         
         _reverse_graph =  self._G.reverse(copy=True)
-        _reverse_pred, _dist = nx.bellman_ford(_reverse_graph,'t') 
+	#_reverse_pred, _dist = nx.bellman_ford(_reverse_graph,'t')
+        _reverse_pred, _dist = nx.bellman_ford(_reverse_graph, self.destination) 				#change
         print "\t\t",time.ctime(), "reverse_pred, & dist by using bellman ford "
         _pred = defaultdict(dict)
         for node, neighbor in _reverse_pred.iteritems():
@@ -137,8 +138,8 @@ class EppsteinShortestPathAlgorithm(object):
                 G.add_edge(node, neighbor)
         return G
                     
-        
-    def _has_path(self, source = 's', destination ='t', edges=[]):
+    #def _has_path(self, source = 's', destination ='t', edges=[]):    
+    def _has_path(self, source, destination, edges=[]):					#change
         """
         from the list of given edges determine whether a path exists in betweeen source and destination
         """
@@ -180,10 +181,11 @@ class EppsteinShortestPathAlgorithm(object):
         remaining_edges = [pe for counter, pe in enumerate(path) if counter not in to_remove]
         remaining_edges.insert(to_remove[0],sidetrack_edge) 
         remaining_edges.extend(list(self._G.node[head]['path']))
-        return self._get_path_from_edges(remaining_edges)
+        return self._get_path_from_edges(remaining_edges, destination =self.destination)	#change
     
-    def _get_path_from_edges(self, edges, destination ='t'):
-        if self._has_path(edges=edges, destination = destination):
+    #def _get_path_from_edges(self, edges, destination ='t'):
+    def _get_path_from_edges(self, edges, destination):			#change
+        if self._has_path(source=self.source, destination = self.destination, edges=edges):
             adj_dict = self._adj_dict(edges)
             G = self._build_graph(adj_dict = adj_dict)
             pred, dist = nx.bellman_ford(G, self.source, destination)
@@ -206,7 +208,8 @@ class EppsteinShortestPathAlgorithm(object):
         graph.add_node(children, index=children,node_info=node_info)
         graph.add_edge(root, children)
         
-    def _build_path_tree(self,source='s', path=[], sidetrack_edges=set(), prev_sigma_e=0, current_vertex=0,visited_edges=set()):
+    #def _build_path_tree(self,source='s', path=[], sidetrack_edges=set(), prev_sigma_e=0, current_vertex=0,visited_edges=set()):
+    def _build_path_tree(self,source, path=[], sidetrack_edges=set(), prev_sigma_e=0, current_vertex=0,visited_edges=set()):	#change
         for edge in sidetrack_edges:
             if self.__is_valid_sidetrack_edge(path=path, edge=edge, ):
                 info = self.__get_sidetrack_edge_info(edge=edge, source=source, prev_sigma_e=prev_sigma_e, path=path)
@@ -256,7 +259,7 @@ class EppsteinShortestPathAlgorithm(object):
             yield distance, path
             source = el_info[1]['source']
             if el_info[0]==0:
-                self._build_path_tree(sidetrack_edges = self.sidetrack_edges, path=path)
+                self._build_path_tree(source= self.source, sidetrack_edges = self.sidetrack_edges, path=path)	#change
             else:
                 self._build_path_tree(source = source,path = path, sidetrack_edges = self.sidetrack_edges, prev_sigma_e = sigma_e,visited_edges=seen_edges)
 
