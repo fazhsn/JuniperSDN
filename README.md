@@ -1,4 +1,4 @@
 # JuniperSDN
 Juniper Telus SDN 
 
-Calculate performance matrices
+Calculate performance Metrics
